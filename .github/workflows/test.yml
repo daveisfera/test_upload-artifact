@@ -1,0 +1,57 @@
+name: build-ios-app
+
+run-name: Build for iOS
+
+on:
+  push:
+    branches:
+      - "**"
+
+concurrency:
+  group: ${{ github.ref }}-ios
+  cancel-in-progress: true
+
+jobs:
+  test_visible:
+    runs-on: macos-15
+    steps:
+      - name: Build
+        run: |
+            mkdir build
+            echo "works" > build/visible.log
+
+      - name: List
+        if: ${{ failure() || cancelled() }}
+        run: |
+            ls build
+            wc -l build/*.log
+
+      - name: Upload Logs
+        uses: actions/upload-artifact@v4.6.1
+        if: ${{ failure() || cancelled() }}
+        with:
+          name: visible_logs
+          path: build/*.log
+          if-no-files-found: error
+
+  test_hidden:
+    runs-on: macos-15
+    steps:
+      - name: Build
+        run: |
+            mkdir .build
+            echo "broken" > .build/hidden.log
+
+      - name: List
+        if: ${{ failure() || cancelled() }}
+        run: |
+            ls .build
+            wc -l .build/*.log
+
+      - name: Upload Logs
+        uses: actions/upload-artifact@v4.6.1
+        if: ${{ failure() || cancelled() }}
+        with:
+          name: hidden_logs
+          path: .build/*.log
+          if-no-files-found: error
