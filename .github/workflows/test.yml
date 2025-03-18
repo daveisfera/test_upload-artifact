@@ -19,6 +19,7 @@ jobs:
         run: |
             mkdir build
             echo "works" > build/visible.log
+            false
 
       - name: List
         if: ${{ failure() || cancelled() }}
@@ -41,6 +42,7 @@ jobs:
         run: |
             mkdir .build
             echo "broken" > .build/hidden.log
+            false
 
       - name: List
         if: ${{ failure() || cancelled() }}
